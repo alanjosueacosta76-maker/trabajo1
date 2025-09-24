@@ -1,0 +1,18 @@
+numeros =[]
+for i in range (10):
+    while True:
+        entrada=input(f"Ingrese el numero {i+1}:")
+        try:
+          num = int(entrada)
+          break
+        except:
+         print("Entrada no valida. Ingresa otro numero.")
+    numeros.append(num)
+
+print("\nNumeros en el mismo orden:")
+for n in numeros:
+  print(" " .join(str(n) for n in numeros))
+
+  print("\n Numeros en el orden inverso:")
+for n in reserved(numeros):
+  print(" " .join(str(n) for n in numeros[::-1]))
