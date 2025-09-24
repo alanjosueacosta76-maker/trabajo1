@@ -9,10 +9,8 @@ for i in range (10):
          print("Entrada no valida. Ingresa otro numero.")
     numeros.append(num)
 
-print("\nNumeros en el mismo orden:")
-for n in numeros:
-  print(" " .join(str(n) for n in numeros))
+print("\nNúmeros en el mismo orden:")
+print(" ".join(str(n) for n in numeros))
 
-  print("\n Numeros en el orden inverso:")
-for n in reserved(numeros):
-  print(" " .join(str(n) for n in numeros[::-1]))
+print("\nNúmeros en el orden inverso:")
+print(" ".join(str(n) for n in reversed(numeros)))
