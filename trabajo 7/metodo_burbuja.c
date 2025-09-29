@@ -1,39 +1,47 @@
-#include <stdio.h>
+using System;
 
-void burbuja(int arr[], int n) {
-    int i, j, temp;
+class Program
+{
+    static void Burbuja(int[] arr)
+    {
+        int n = arr.Length;
+        int temp;
 
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < n - 1 - i; j++) {
-            if (arr[j] > arr[j + 1]) {
-                temp = arr[j];
-                arr[j] = arr[j + 1];
-                arr[j + 1] = temp;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < n - 1 - i; j++)
+            {
+                if (arr[j] > arr[j + 1])
+                {
+                    temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
             }
         }
     }
-}
 
-
-void imprimirArreglo(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        printf("%d ", arr[i]);
+    static void ImprimirArreglo(int[] arr)
+    {
+        foreach (int num in arr)
+        {
+            Console.Write($"{num} ");
+        }
+        Console.WriteLine();
     }
-    printf("\n");
+
+    static void Main()
+    {
+        int[] lista = { 5, 3, 8, 4, 2 };
+
+        Console.WriteLine("Lista desordenada:");
+        ImprimirArreglo(lista);
+
+        Burbuja(lista);
+
+        Console.WriteLine("Lista ordenada:");
+        ImprimirArreglo(lista);
+    }
 }
 
 
-int main() {
-    int lista[] = {5, 3, 8, 4, 2};
-    int n = sizeof(lista) / sizeof(lista[0]);
-
-    printf("Lista desordenada:");
-    imprimirArreglo(lista, n);
-
-    burbuja(lista, n);
-
-    printf("Lista ordenada: ");
-    imprimirArreglo(lista, n);
-
-    return 0;
-}
