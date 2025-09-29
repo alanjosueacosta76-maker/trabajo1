@@ -1,41 +1,35 @@
-#include <stdio.h>
-#include <string.h>
+using System;
 
-// Definición del tipo de dato abstracto Persona
-typedef struct {
-    char nombre[50];
-    char apellidoPaterno[50];
-    char apellidoMaterno[50];
-} Persona;
+public class Persona
+{
 
-// Función para crear una persona
-Persona crearPersona(const char* nombre, const char* apPaterno, const char* apMaterno) {
-    Persona p;
+    public string Nombre { get; set; }
+    public string ApellidoPaterno { get; set; }
+    public string ApellidoMaterno { get; set; }
 
-    // Copiar los datos a los campos de la estructura
-    strncpy(p.nombre, nombre, sizeof(p.nombre) - 1);
-    p.nombre[sizeof(p.nombre) - 1] = '\0'; // Asegurar terminación nula
 
-    strncpy(p.apellidoPaterno, apPaterno, sizeof(p.apellidoPaterno) - 1);
-    p.apellidoPaterno[sizeof(p.apellidoPaterno) - 1] = '\0';
+    public Persona(string nombre, string apellidoPaterno, string apellidoMaterno)
+    {
+        Nombre = nombre;
+        ApellidoPaterno = apellidoPaterno;
+        ApellidoMaterno = apellidoMaterno;
+    }
 
-    strncpy(p.apellidoMaterno, apMaterno, sizeof(p.apellidoMaterno) - 1);
-    p.apellidoMaterno[sizeof(p.apellidoMaterno) - 1] = '\0';
 
-    return p;
+    public void Imprimir()
+    {
+        Console.WriteLine($"Nombre completo: {Nombre} {ApellidoPaterno} {ApellidoMaterno}");
+    }
 }
 
-// Función para imprimir una persona
-void imprimirPersona(Persona p) {
-    printf("Nombre completo: %s %s %s\n", p.nombre, p.apellidoPaterno, p.apellidoMaterno);
-}
+class Program
+{
+    static void Main()
+    {
 
-int main() {
-    // Crear una persona usando el TDA
-    Persona persona1 = crearPersona("Alan", "Acosta", "Maro");
+        Persona persona1 = new Persona("Alan", "Acosta", "Maro");
 
-    // Imprimir la información
-    imprimirPersona(persona1);
 
-    return 0;
+        persona1.Imprimir();
+    }
 }
