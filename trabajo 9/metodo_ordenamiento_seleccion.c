@@ -1,65 +1,64 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+using System;
 
-#define TAM 10  
+class Program
+{
+    const int TAM = 10;
 
-
-void generarDatosAleatorios(int arreglo[], int tamaño) {
-    for (int i = 0; i < tamaño; i++) {
-        arreglo[i] = rand() % 100 + 1; 
+    static void GenerarDatosAleatorios(int[] arreglo, int tamaño)
+    {
+        Random rnd = new Random();
+        for (int i = 0; i < tamaño; i++)
+        {
+            arreglo[i] = rnd.Next(1, 101); 
+        }
     }
-}
 
-
-void imprimirArreglo(int arreglo[], int tamaño) {
-    for (int i = 0; i < tamaño; i++) {
-        printf("%d ", arreglo[i]);
+    static void ImprimirArreglo(int[] arreglo, int tamaño)
+    {
+        for (int i = 0; i < tamaño; i++)
+        {
+            Console.Write(arreglo[i] + " ");
+        }
+        Console.WriteLine();
     }
-    printf("\n");
-}
 
+    static void SeleccionSort(int[] lista, int n)
+    {
+        int i, j, min_index, temp;
 
-// Función para hacer el ordenamiento por selección
-void selecion_sort(int lista[], int n) {
-    int i, j, min_index, temp;
+        for (i = 0; i < n - 1; i++)
+        {
+            min_index = i;
 
-    for (i = 0; i < n - 1; i++) {
-        // Suponemos que el elemento actual es el mínimo
-        min_index = i;
+            for (j = i + 1; j < n; j++)
+            {
+                if (lista[j] < lista[min_index])
+                {
+                    min_index = j;
+                }
+            }
 
-        // Buscamos el mínimo en el resto de la lista
-        for (j = i + 1; j < n; j++) {
-            if (lista[j] < lista[min_index]) {
-                min_index = j;
+            if (min_index != i)
+            {
+                temp = lista[i];
+                lista[i] = lista[min_index];
+                lista[min_index] = temp;
             }
         }
-
-        // Si encontramos uno menor, lo intercambiamos
-        if (min_index != i) {
-            temp = lista[i];
-            lista[i] = lista[min_index];
-            lista[min_index] = temp;
-        }
     }
-}
-int main() {
-    int arreglo[TAM];
 
+    static void Main()
+    {
+        int[] arreglo = new int[TAM];
 
-    srand(time(NULL));
+        GenerarDatosAleatorios(arreglo, TAM);
 
+        Console.WriteLine("Arreglo desordenado:");
+        ImprimirArreglo(arreglo, TAM);
 
-    generarDatosAleatorios(arreglo, TAM);
+        SeleccionSort(arreglo, TAM);
 
-    printf("Arreglo desordenado:\n");
-    imprimirArreglo(arreglo, TAM);
-
-    
-    selecion_sort(arreglo, TAM);
-
-    printf("Arreglo ordenado:\n");
-    imprimirArreglo(arreglo, TAM);
-
-    return 0;
+        Console.WriteLine("Arreglo ordenado:");
+        ImprimirArreglo(arreglo, TAM);
+    }
 }
