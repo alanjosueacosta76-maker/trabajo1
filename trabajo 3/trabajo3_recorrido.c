@@ -1,13 +1,17 @@
-#include <stdio.h>
+using System;
 
-int main() {
-    int arreglo[] = {10, 20, 30, 40, 50};
-    int tamaño = sizeof(arreglo) / sizeof(arreglo[0]);
+class Program
+{
+    static void Main()
+    {
+        int[] arreglo = { 10, 20, 30, 40, 50 };
 
-    printf("Recorrido del arreglo:\n");
-    for (int i = 0; i < tamaño; i++) {
-        printf("%d\n", arreglo[i]);
+        Console.WriteLine("Recorrido del arreglo:");
+        for (int i = 0; i < arreglo.Length; i++)
+        {
+            Console.WriteLine(arreglo[i]);
+        }
     }
-
-    return 0;
 }
+
+
