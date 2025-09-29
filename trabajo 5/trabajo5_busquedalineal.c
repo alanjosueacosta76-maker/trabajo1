@@ -1,26 +1,42 @@
-#include <stdio.h>
+using System;
 
-int main() {
-    int arreglo[] = {5, 8, 3, 10, 7, 2, 15, 9};
-    int tamaño = sizeof(arreglo) / sizeof(arreglo[0]);
-    int elemento, encontrado = 0;
+class Program
+{
+    static void Main()
+    {
+        int[] arreglo = { 5, 8, 3, 10, 7, 2, 15, 9 };
+        int tamaño = arreglo.Length;
+        int elemento;
+        bool encontrado = false;
 
-    printf("Ingrese el número a buscar: ");
-    scanf("%d", &elemento);
+        Console.Write("Ingrese el número a buscar: ");
+        string entrada = Console.ReadLine();
 
-    // Búsqueda lineal
-    for (int i = 0; i < tamaño; i++) {
-        if (arreglo[i] == elemento) {
-            printf("Elemento %d encontrado en la posición %d.\n", elemento, i);
-            encontrado = 1;
-            break; // Detener búsqueda al encontrar el elemento
+        // Intentar convertir la entrada a entero
+        if (int.TryParse(entrada, out elemento))
+        {
+            // Búsqueda lineal
+            for (int i = 0; i < tamaño; i++)
+            {
+                if (arreglo[i] == elemento)
+                {
+                    Console.WriteLine($"Elemento {elemento} encontrado en la posición {i}.");
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            if (!encontrado)
+            {
+                Console.WriteLine($"Elemento {elemento} no encontrado en el arreglo.");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Entrada inválida. Por favor ingrese un número entero.");
         }
     }
-
-    if (!encontrado) {
-        printf("Elemento %d no encontrado en el arreglo.\n", elemento);
-    }
-
-    return 0;
 }
+
+
 
