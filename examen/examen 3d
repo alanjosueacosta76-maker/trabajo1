@@ -1,0 +1,30 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+    const int capas = 3, filas = 3, columnas = 3;
+    int matriz[capas][filas][columnas];
+
+    for (int capa = 0; capa < capas; capa++) {
+        cout << "Capa " << capa + 1 << ":" << endl;
+        for (int fila = 0; fila < filas; fila++) {
+            for (int columna = 0; columna < columnas; columna++) {
+                cout << "Ingrese valor [" << capa << "][" << fila << "][" << columna << "]: ";
+                cin >> matriz[capa][fila][columna];
+            }
+        }
+    }
+
+    for (int capa = 0; capa < capas; capa++) {
+        int suma = 0;
+        for (int fila = 0; fila < filas; fila++) {
+            for (int columna = 0; columna < columnas; columna++) {
+                suma += matriz[capa][fila][columna];
+            }
+        }
+        double promedio = static_cast<double>(suma) / (filas * columnas);
+        cout << "Promedio de la capa " << capa + 1 << ": " << promedio << endl;
+    }
+
+    return 0;
+}
