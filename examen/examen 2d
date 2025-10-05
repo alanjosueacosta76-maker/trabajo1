@@ -1,0 +1,73 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int cantidad_filas, cantidad_columnas;
+
+    cout << "Ingrese la cantidad de filas: ";
+    cin >> cantidad_filas;
+
+    cout << "Ingrese la cantidad de columnas: ";
+    cin >> cantidad_columnas;
+
+    cin.ignore();
+
+    vector<vector<int>> matriz_original;
+    vector<vector<int>> matriz_ordenada;
+
+    for (int fila = 0; fila < cantidad_filas; fila++) {
+        bool fila_valida = false;
+        vector<int> fila_numeros;
+
+        while (!fila_valida) {
+            cout << "Ingrese los " << cantidad_columnas << " valores de la fila " << fila + 1 << " separados por espacios: ";
+            string linea;
+            getline(cin, linea);
+
+            stringstream ss(linea);
+            int numero;
+            vector<int> temp_fila;
+
+            while (ss >> numero) {
+                temp_fila.push_back(numero);
+            }
+
+            if (temp_fila.size() != cantidad_columnas) {
+                cout << "Error: Debe ingresar exactamente " << cantidad_columnas << " valores." << endl;
+                continue;
+            }
+
+            fila_numeros = temp_fila;
+            fila_valida = true;
+        }
+
+        matriz_original.push_back(fila_numeros);
+
+        vector<int> fila_ordenada = fila_numeros;
+        sort(fila_ordenada.begin(), fila_ordenada.end());
+        matriz_ordenada.push_back(fila_ordenada);
+    }
+
+    cout << "\nMatriz original (filas desordenadas):" << endl;
+    for (const auto& fila : matriz_original) {
+        for (int numero : fila) {
+            cout << numero << " ";
+        }
+        cout << endl;
+    }
+
+    cout << "\nMatriz con filas ordenadas:" << endl;
+    for (const auto& fila : matriz_ordenada) {
+        for (int numero : fila) {
+            cout << numero << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
