@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int cantidadElementos;
+    string lineaEntrada;
+
+    cout << "Ingrese la cantidad de elementos: ";
+    cin >> cantidadElementos;
+    cin.ignore();
+
+    cout << "Ingrese los elementos separados por espacios: ";
+    getline(cin, lineaEntrada);
+
+    vector<int> listaSinDuplicados;
+    vector<int> listaDuplicados;
+
+    stringstream ss(lineaEntrada);
+    string elemento;
+
+    while (ss >> elemento) {
+        try {
+            int numero = stoi(elemento);
+
+            if (find(listaSinDuplicados.begin(), listaSinDuplicados.end(), numero) == listaSinDuplicados.end()) {
+                listaSinDuplicados.push_back(numero);
+            } else {
+                if (find(listaDuplicados.begin(), listaDuplicados.end(), numero) == listaDuplicados.end()) {
+                    listaDuplicados.push_back(numero);
+                }
+            }
+        } catch (...) {
+            cout << "'" << elemento << "' no es un número válido y será ignorado." << endl;
+        }
+    }
+
+    cout << "Arreglo sin duplicados:" << endl;
+    for (int numero : listaSinDuplicados) {
+        cout << numero << " ";
+    }
+    cout << endl;
+
+    if (listaDuplicados.empty()) {
+        cout << "No se encontraron números duplicados." << endl;
+    } else {
+        cout << "Números duplicados:" << endl;
+        for (int numero : listaDuplicados) {
+            cout << numero << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
