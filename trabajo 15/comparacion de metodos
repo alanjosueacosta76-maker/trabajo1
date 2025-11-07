@@ -1,1 +1,243 @@
+import random
+import time
+import sys
+from collections import Counter
+import matplotlib.pyplot as plt
+
+sys.setrecursionlimit(300000)
+
+# MÉTODOS DE ORDENAMIENTO 
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+
+def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr) // 2
+        L = arr[:mid]
+        R = arr[mid:]
+
+        merge_sort(L)
+        merge_sort(R)
+
+        i = j = k = 0
+        while i < len(L) and j < len(R):
+            if L[i] < R[j]:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+            k += 1
+
+        while i < len(L):
+            arr[k] = L[i]
+            i += 1
+            k += 1
+
+        while j < len(R):
+            arr[k] = R[j]
+            j += 1
+            k += 1
+
+def heapify(arr, n, i):
+    largest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    if l < n and arr[l] > arr[largest]:
+        largest = l
+    if r < n and arr[r] > arr[largest]:
+        largest = r
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+
+def heap_sort(arr):
+    n = len(arr)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+    for i in range(n - 1, 0, -1):
+        arr[i], arr[0] = arr[0], arr[i]
+        heapify(arr, i, 0)
+
+def counting_sort(arr):
+    max_val = max(arr)
+    count = [0] * (max_val + 1)
+    for num in arr:
+        count[num] += 1
+    idx = 0
+    for i, c in enumerate(count):
+        for _ in range(c):
+            arr[idx] = i
+            idx += 1
+
+def bucket_sort(arr):
+    if len(arr) == 0:
+        return arr
+    max_val = max(arr)
+    size = max_val / len(arr)
+    buckets = [[] for _ in range(len(arr))]
+    for num in arr:
+        idx = int(num / size) if size > 0 else 0
+        if idx != len(arr):
+            buckets[idx].append(num)
+        else:
+            buckets[len(arr) - 1].append(num)
+    arr.clear()
+    for bucket in buckets:
+        bucket.sort()
+        arr.extend(bucket)
+
+def hash_sort(arr):
+    freq = Counter(arr)
+    arr[:] = []
+    for key in sorted(freq.keys()):
+        arr.extend([key] * freq[key])
+
+def counting_sort_radix(arr, exp):
+    n = len(arr)
+    output = [0] * n
+    count = [0] * 10
+    for i in range(n):
+        index = arr[i] // exp
+        count[index % 10] += 1
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    i = n - 1
+    while i >= 0:
+        index = arr[i] // exp
+        output[count[index % 10] - 1] = arr[i]
+        count[index % 10] -= 1
+        i -= 1
+    for i in range(n):
+        arr[i] = output[i]
+
+def radix_sort(arr):
+    max_val = max(arr)
+    exp = 1
+    while max_val // exp > 0:
+        counting_sort_radix(arr, exp)
+        exp *= 10
+
+#  GENERADOR DE ARREGLOS 
+
+def generar_arreglo(n, tipo):
+    arr = list(range(n))
+    if tipo == "medio":
+        mitad = n // 2
+        random.shuffle(arr[:mitad])
+    elif tipo == "inverso":
+        arr.reverse()
+    elif tipo == "aleatorio":
+        random.shuffle(arr)
+    return arr
+
+# COMPARADOR PRINCIPAL 
+
+def comparar():
+    tamanos = [100, 1000, 10000, 100000]
+    tipos = ["ordenado", "medio", "inverso"]
+
+    metodos = {
+        "Bubble Sort": bubble_sort,
+        "Insertion Sort": insertion_sort,
+        "Selection Sort": selection_sort,
+        "Quick Sort": lambda arr: quick_sort(arr),
+        "Merge Sort": merge_sort,
+        "Heap Sort": heap_sort,
+        "Counting Sort": counting_sort,
+        "Bucket Sort": bucket_sort,
+        "Hash Sort": hash_sort,
+        "Radix Sort": radix_sort
+    }
+
+    for n in tamanos:
+        print("\n" + "=" * 45)
+        print(f" Tamaño del arreglo: {n}")
+        print("=" * 45)
+
+        #  Advertencia solo para n = 100000
+        if n == 100000:
+            print("\n⚠️ Advertencia: Bubble, Insertion y Selection pueden tardar varios minutos.")
+            print("El programa NO está trabado, está procesando...\n")
+
+        tiempos_grafica = {}
+
+        for tipo in tipos:
+            print(f"\n--- Escenario: {tipo} ---")
+            resultados = []
+
+            for nombre, metodo in metodos.items():
+                arr = generar_arreglo(n, tipo)
+
+                inicio = time.perf_counter()
+
+                if nombre == "Quick Sort":
+                    arr = metodo(arr)
+                else:
+                    metodo(arr)
+
+                fin = time.perf_counter()
+                duracion = fin - inicio   # ✅ SEGUNDOS
+
+                resultados.append((nombre, duracion))
+                tiempos_grafica.setdefault(nombre, []).append(duracion)
+
+                print(f"{nombre:<20} -> {duracion:>10.6f} s")
+
+            resultados.sort(key=lambda x: x[1])
+            print(f"✅ Mejor método: {resultados[0][0]}")
+
+        # GRAFICA DE BARRAS POR CADA n 
+        plt.figure(figsize=(14, 6))
+        nombres = list(tiempos_grafica.keys())
+        x = range(len(nombres))
+
+        for i, tipo in enumerate(tipos):
+            valores = [tiempos_grafica[n][i] for n in nombres]
+            plt.bar([pos + i*0.25 for pos in x], valores, width=0.25, label=tipo)
+
+        plt.title(f"Comparación de tiempo por método (n = {n})")
+        plt.xlabel("Métodos")
+        plt.ylabel("Tiempo (s)")
+        plt.xticks([pos + 0.25 for pos in x], nombres, rotation=45)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+
+
+if __name__ == "__main__":
+    comparar()
 
