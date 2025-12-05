@@ -1,1 +1,67 @@
+// contenido de mi achivo llamado nodo.cs
+using System;
+using System.Collections.Generic;
+
+namespace ProyectoArboles
+{
+    public class Nodo
+    {
+        public string Id { get; set; }
+        public string Nombre { get; set; }
+        public string Tipo { get; set; }
+        public string? Contenido { get; set; }
+        public List<Nodo> Children { get; set; }
+        public Nodo? Padre { get; set; }
+
+        public Nodo(string nombre, string tipo, string? contenido = null, Nodo? padre = null)
+        {
+            Id = Guid.NewGuid().ToString();
+            Nombre = nombre;
+            Tipo = tipo;
+            Contenido = contenido;
+            Children = new List<Nodo>();
+            Padre = padre;
+        }
+
+        public bool EsCarpeta()
+        {
+            return Tipo == "carpeta";
+        }
+
+        public void AgregarHijo(Nodo hijo)
+        {
+            hijo.Padre = this;
+            Children.Add(hijo);
+        }
+
+        public bool EliminarHijo(Nodo hijo)
+        {
+            return Children.Remove(hijo);
+        }
+
+        public override string ToString()
+        {
+            return $"<{Tipo.ToUpper()}: {Nombre} (ID: {Id.Substring(0,8)})>";
+        }
+    }
+}
+
+
+//contenido de mi archivo llamado program.cs
+using ProyectoArboles;
+
+class Program
+{
+    static void Main()
+    {
+        Nodo root = new Nodo("/", "carpeta");
+        Nodo docs = new Nodo("Documentos", "carpeta");
+
+        root.AgregarHijo(docs);
+
+        Console.WriteLine(root);
+        Console.WriteLine("  " + docs);
+    }
+}
+
 
