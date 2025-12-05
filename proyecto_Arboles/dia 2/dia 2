@@ -1,1 +1,175 @@
+//el archivo nodo.cs no tuvo cambios
+using System;
+using System.Collections.Generic;
+
+namespace ProyectoArboles
+{
+    public class Nodo
+    {
+        public string Id { get; set; }
+        public string Nombre { get; set; }
+        public string Tipo { get; set; }
+        public string? Contenido { get; set; }
+        public List<Nodo> Children { get; set; }
+        public Nodo? Padre { get; set; }
+
+        public Nodo(string nombre, string tipo, string? contenido = null, Nodo? padre = null)
+        {
+            Id = Guid.NewGuid().ToString();
+            Nombre = nombre;
+            Tipo = tipo;
+            Contenido = contenido;
+            Children = new List<Nodo>();
+            Padre = padre;
+        }
+
+        public bool EsCarpeta()
+        {
+            return Tipo == "carpeta";
+        }
+
+        public void AgregarHijo(Nodo hijo)
+        {
+            hijo.Padre = this;
+            Children.Add(hijo);
+        }
+
+        public bool EliminarHijo(Nodo hijo)
+        {
+            return Children.Remove(hijo);
+        }
+
+        public override string ToString()
+        {
+            return $"<{Tipo.ToUpper()}: {Nombre} (ID: {Id.Substring(0,8)})>";
+        }
+    }
+}
+
+// nuevo archivo creado Arbol.cs
+using System;
+using System.Collections.Generic;
+
+namespace ProyectoArboles
+{
+    public class Arbol
+    {
+        public Nodo Raiz { get; set; }
+
+        public Arbol()
+        {
+            Raiz = new Nodo("/", "carpeta");
+        }
+
+        public Nodo? Buscar(string ruta)
+        {
+            if (ruta == "/" || ruta == "") return Raiz;
+
+            string[] partes = ruta.Trim('/').Split('/');
+            Nodo actual = Raiz;
+
+            foreach (var parte in partes)
+            {
+                Nodo? encontrado = actual.Children.Find(h => h.Nombre == parte);
+                if (encontrado == null) return null;
+                actual = encontrado;
+            }
+            return actual;
+        }
+
+        public bool Insertar(string rutaPadre, string nombre, string tipo, string? contenido = null)
+        {
+            Nodo? padre = Buscar(rutaPadre);
+            if (padre == null || !padre.EsCarpeta()) return false;
+
+            if (padre.Children.Exists(n => n.Nombre == nombre)) return false;
+
+            Nodo nuevo = new Nodo(nombre, tipo, contenido);
+            padre.AgregarHijo(nuevo);
+            return true;
+        }
+
+        public bool Eliminar(string ruta)
+        {
+            Nodo? nodo = Buscar(ruta);
+            if (nodo == null || nodo == Raiz) return false;
+
+            nodo.Padre!.EliminarHijo(nodo);
+            return true;
+        }
+
+        public bool Mover(string origen, string destino)
+        {
+            Nodo? nodo = Buscar(origen);
+            Nodo? carpetaDestino = Buscar(destino);
+
+            if (nodo == null || carpetaDestino == null || !carpetaDestino.EsCarpeta())
+                return false;
+
+            nodo.Padre!.EliminarHijo(nodo);
+            carpetaDestino.AgregarHijo(nodo);
+
+            return true;
+        }
+
+        public bool Renombrar(string ruta, string nuevoNombre)
+        {
+            Nodo? nodo = Buscar(ruta);
+            if (nodo == null || nodo == Raiz) return false;
+
+            if (nodo.Padre!.Children.Exists(h => h.Nombre == nuevoNombre))
+                return false;
+
+            nodo.Nombre = nuevoNombre;
+            return true;
+        }
+
+        public int Tamano()
+        {
+            return Contar(Raiz);
+        }
+
+        private int Contar(Nodo nodo)
+        {
+            int total = 1;
+            foreach (var hijo in nodo.Children)
+                total += Contar(hijo);
+            return total;
+        }
+
+        public int Altura()
+        {
+            return AlturaRec(Raiz);
+        }
+
+        private int AlturaRec(Nodo nodo)
+        {
+            if (nodo.Children.Count == 0) return 1;
+
+            int max = 0;
+            foreach (var hijo in nodo.Children)
+                max = Math.Max(max, AlturaRec(hijo));
+
+            return 1 + max;
+        }
+    }
+}
+
+//prueba simple en mi archivo program.cs
+using ProyectoArboles;
+
+class Program
+{
+    static void Main()
+    {
+        Arbol fs = new Arbol();
+
+        fs.Insertar("/", "Documentos", "carpeta");
+        fs.Insertar("/Documentos", "Tarea1.txt", "archivo");
+
+        Console.WriteLine("Árbol creado correctamente.");
+        Console.WriteLine("Tamaño total: " + fs.Tamano());
+        Console.WriteLine("Altura: " + fs.Altura());
+    }
+}
 
