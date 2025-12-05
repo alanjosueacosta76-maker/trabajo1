@@ -1,1 +1,212 @@
+// archivo Nodo.cs no tuvo cambios se encuentra en el archivo del dia 2
+
+// archivp Arbol.cs tuvo cambios se le agregaron validaciones y mensajes
+using System;
+using System.Collections.Generic;
+
+namespace ProyectoArboles
+{
+    public class Arbol
+    {
+        public Nodo Raiz { get; set; }
+
+        public Arbol()
+        {
+            Raiz = new Nodo("/", "carpeta");
+        }
+
+        public Nodo? Buscar(string ruta)
+        {
+            if (ruta == "/" || ruta == "") return Raiz;
+
+            string[] partes = ruta.Trim('/').Split('/');
+            Nodo actual = Raiz;
+
+            foreach (var parte in partes)
+            {
+                Nodo? encontrado = actual.Children.Find(h => h.Nombre == parte);
+                if (encontrado == null)
+                {
+                    Console.WriteLine($"Error: No se encontró la ruta: {ruta}");
+                    return null;
+                }
+                actual = encontrado;
+            }
+            return actual;
+        }
+
+        public bool Insertar(string rutaPadre, string nombre, string tipo, string? contenido = null)
+        {
+            Nodo? padre = Buscar(rutaPadre);
+            if (padre == null)
+            {
+                Console.WriteLine("No se pudo insertar: la ruta padre no existe.");
+                return false;
+            }
+
+            if (!padre.EsCarpeta())
+            {
+                Console.WriteLine("No se puede insertar en un archivo.");
+                return false;
+            }
+
+            if (padre.Children.Exists(n => n.Nombre == nombre))
+            {
+                Console.WriteLine("Ya existe un nodo con ese nombre en esta carpeta.");
+                return false;
+            }
+
+            Nodo nuevo = new Nodo(nombre, tipo, contenido);
+            padre.AgregarHijo(nuevo);
+            Console.WriteLine($"Insertado correctamente: {nombre} en {rutaPadre}");
+            return true;
+        }
+
+        public bool Eliminar(string ruta)
+        {
+            Nodo? nodo = Buscar(ruta);
+
+            if (nodo == null)
+            {
+                Console.WriteLine("No se puede eliminar: ruta no encontrada.");
+                return false;
+            }
+
+            if (nodo == Raiz)
+            {
+                Console.WriteLine("No se puede eliminar la raíz.");
+                return false;
+            }
+
+            nodo.Padre!.EliminarHijo(nodo);
+            Console.WriteLine($"Nodo eliminado: {ruta}");
+            return true;
+        }
+
+        public bool Mover(string origen, string destino)
+        {
+            Nodo? nodo = Buscar(origen);
+            Nodo? carpetaDestino = Buscar(destino);
+
+            if (nodo == null || carpetaDestino == null)
+            {
+                Console.WriteLine("No se puede mover: ruta inválida.");
+                return false;
+            }
+
+            if (!carpetaDestino.EsCarpeta())
+            {
+                Console.WriteLine("No se puede mover a un archivo.");
+                return false;
+            }
+
+            nodo.Padre!.EliminarHijo(nodo);
+            carpetaDestino.AgregarHijo(nodo);
+
+            Console.WriteLine($"Nodo movido: {origen} → {destino}");
+            return true;
+        }
+
+        public bool Renombrar(string ruta, string nuevoNombre)
+        {
+            Nodo? nodo = Buscar(ruta);
+
+            if (nodo == null)
+            {
+                Console.WriteLine("No se puede renombrar: ruta inválida.");
+                return false;
+            }
+
+            if (nodo == Raiz)
+            {
+                Console.WriteLine("No se puede renombrar la raíz.");
+                return false;
+            }
+
+            if (nodo.Padre!.Children.Exists(h => h.Nombre == nuevoNombre))
+            {
+                Console.WriteLine("Ya existe un nodo con ese nombre.");
+                return false;
+            }
+
+            nodo.Nombre = nuevoNombre;
+            Console.WriteLine($"Nodo renombrado correctamente: {ruta} → {nuevoNombre}");
+            return true;
+        }
+
+        public int Tamano()
+        {
+            return Contar(Raiz);
+        }
+
+        private int Contar(Nodo nodo)
+        {
+            int total = 1;
+            foreach (var hijo in nodo.Children)
+                total += Contar(hijo);
+            return total;
+        }
+
+        public int Altura()
+        {
+            return AlturaRec(Raiz);
+        }
+
+        private int AlturaRec(Nodo nodo)
+        {
+            if (nodo.Children.Count == 0) return 1;
+
+            int max = 0;
+            foreach (var hijo in nodo.Children)
+                max = Math.Max(max, AlturaRec(hijo));
+
+            return 1 + max;
+        }
+    }
+}
+
+// Se creo un nuevo archivo llamado Pruebas.cs 
+using System;
+using ProyectoArboles;
+
+public static class Pruebas
+{
+    public static void Ejecutar()
+    {
+        Console.WriteLine("=== INICIANDO PRUEBAS ===");
+
+        Arbol fs = new Arbol();
+
+        Console.WriteLine("\n--- Prueba 1: Insertar nodos ---");
+        fs.Insertar("/", "Documentos", "carpeta");
+        fs.Insertar("/Documentos", "Tarea1.txt", "archivo");
+        fs.Insertar("/Documentos", "Notas.txt", "archivo");
+
+        Console.WriteLine("\n--- Prueba 2: Renombrar archivo ---");
+        fs.Renombrar("/Documentos/Notas.txt", "Apuntes.txt");
+
+        Console.WriteLine("\n--- Prueba 3: Mover archivo ---");
+        fs.Insertar("/", "Backup", "carpeta");
+        fs.Mover("/Documentos/Apuntes.txt", "/Backup");
+
+        Console.WriteLine("\n--- Prueba 4: Eliminar archivo ---");
+        fs.Eliminar("/Documentos/Tarea1.txt");
+
+        Console.WriteLine("\n--- Prueba 5: Tamaño y Altura ---");
+        Console.WriteLine("Tamaño del árbol: " + fs.Tamano());
+        Console.WriteLine("Altura del árbol: " + fs.Altura());
+
+        Console.WriteLine("\n=== PRUEBAS FINALIZADAS ===");
+    }
+}
+
+// archivo program.cs se modifico para solo ejecutar el archivo pruebas.cs
+class Program
+{
+    static void Main()
+    {
+        Pruebas.Ejecutar();
+    }
+}
+
 
