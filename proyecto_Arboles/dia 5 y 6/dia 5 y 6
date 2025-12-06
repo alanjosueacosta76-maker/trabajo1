@@ -1,0 +1,440 @@
+// archivo arbol.cs se le agrego cambios para el archivo trie.cs
+using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.IO;
+
+namespace ProyectoArboles
+{
+    public class Arbol
+    {
+        public Nodo Raiz { get; set; }
+        private Trie trie; // ← Estructura para autocompletado y búsqueda (Día 5–6)
+
+        public Arbol()
+        {
+            Raiz = new Nodo("/", "carpeta");
+            trie = new Trie();
+            trie.Insertar(Raiz.Nombre, Raiz); // Indexar raíz
+        }
+
+        //  BÚSQUEDA POR RUTA
+        public Nodo? Buscar(string ruta)
+        {
+            if (ruta == "/" || ruta == "")
+                return Raiz;
+
+            string[] partes = ruta.Trim('/').Split('/');
+            Nodo actual = Raiz;
+
+            foreach (var parte in partes)
+            {
+                Nodo? encontrado = actual.Children.Find(h => h.Nombre == parte);
+                if (encontrado == null)
+                {
+                    Console.WriteLine("Ruta no encontrada: " + ruta);
+                    return null;
+                }
+                actual = encontrado;
+            }
+            return actual;
+        }
+
+        //  INSERTAR (actualiza TRIE)
+        public bool Insertar(string rutaPadre, string nombre, string tipo, string? contenido = null)
+        {
+            Nodo? padre = Buscar(rutaPadre);
+            if (padre == null)
+            {
+                Console.WriteLine("No se pudo insertar: la ruta padre no existe.");
+                return false;
+            }
+
+            if (!padre.EsCarpeta())
+            {
+                Console.WriteLine("No se puede insertar dentro de un archivo.");
+                return false;
+            }
+
+            if (padre.Children.Exists(n => n.Nombre == nombre))
+            {
+                Console.WriteLine("Ya existe un nodo con ese nombre.");
+                return false;
+            }
+
+            Nodo nuevo = new Nodo(nombre, tipo, contenido);
+            padre.AgregarHijo(nuevo);
+
+            trie.Insertar(nombre, nuevo); // INDEXAR EN TRIE
+
+            Console.WriteLine("Insertado correctamente: " + nombre);
+            return true;
+        }
+
+        //  ELIMINAR (actualiza TRIE)
+        public bool Eliminar(string ruta)
+        {
+            Nodo? nodo = Buscar(ruta);
+
+            if (nodo == null)
+            {
+                Console.WriteLine("No se puede eliminar: ruta no encontrada.");
+                return false;
+            }
+
+            if (nodo == Raiz)
+            {
+                Console.WriteLine("No se puede eliminar la raíz.");
+                return false;
+            }
+
+            nodo.Padre!.EliminarHijo(nodo);
+
+            trie.Eliminar(nodo.Nombre, nodo); // QUITAR DE TRIE
+
+            Console.WriteLine("Nodo eliminado: " + ruta);
+            return true;
+        }
+
+        //  MOVER (actualiza TRIE INDIRECTAMENTE)
+        public bool Mover(string origen, string destino)
+        {
+            Nodo? nodo = Buscar(origen);
+            Nodo? destinoNodo = Buscar(destino);
+
+            if (nodo == null || destinoNodo == null)
+            {
+                Console.WriteLine("No se puede mover: ruta inválida.");
+                return false;
+            }
+
+            if (!destinoNodo.EsCarpeta())
+            {
+                Console.WriteLine("No se puede mover dentro de un archivo.");
+                return false;
+            }
+
+            nodo.Padre!.EliminarHijo(nodo);
+            destinoNodo.AgregarHijo(nodo);
+
+            Console.WriteLine($"Nodo movido: {origen} -> {destino}");
+            return true;
+        }
+
+
+
+        public bool Renombrar(string ruta, string nuevoNombre)
+        {
+            Nodo? nodo = Buscar(ruta);
+
+            if (nodo == null)
+            {
+                Console.WriteLine("No se puede renombrar: ruta inválida.");
+                return false;
+            }
+
+            if (nodo == Raiz)
+            {
+                Console.WriteLine("No se puede renombrar la raíz.");
+                return false;
+            }
+
+            if (nodo.Padre!.Children.Exists(h => h.Nombre == nuevoNombre))
+            {
+                Console.WriteLine("Ya existe un nodo con ese nombre.");
+                return false;
+            }
+
+            trie.Eliminar(nodo.Nombre, nodo);  // quitar viejo nombre
+            nodo.Nombre = nuevoNombre;
+            trie.Insertar(nuevoNombre, nodo);  // indexar nuevo nombre
+
+            Console.WriteLine($"Renombrado correctamente: {ruta} -> {nuevoNombre}");
+            return true;
+        }
+
+        //  TAMAÑO Y ALTURA
+        public int Tamano() => Contar(Raiz);
+
+        private int Contar(Nodo nodo)
+        {
+            int total = 1;
+            foreach (var hijo in nodo.Children)
+                total += Contar(hijo);
+            return total;
+        }
+
+        public int Altura() => AlturaRec(Raiz);
+
+        private int AlturaRec(Nodo nodo)
+        {
+            if (nodo.Children.Count == 0)
+                return 1;
+
+            int max = 0;
+            foreach (var hijo in nodo.Children)
+                max = Math.Max(max, AlturaRec(hijo));
+
+            return 1 + max;
+        }
+
+        //  DÍA 5–6: BÚSQUEDA POR NOMBRE + AUTOCOMPLETADO
+        public List<Nodo> BuscarNombre(string nombre)
+        {
+            return trie.BusquedaExacta(nombre);
+        }
+
+        public List<Nodo> Autocompletar(string prefijo)
+        {
+            return trie.Autocompletar(prefijo);
+        }
+
+        //       PERSISTENCIA JSON (DÍA 4)
+        public void GuardarJSON(string rutaArchivo)
+        {
+            var opciones = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+
+            string json = JsonSerializer.Serialize(Raiz, opciones);
+            File.WriteAllText(rutaArchivo, json);
+
+            Console.WriteLine("Árbol guardado en JSON correctamente.");
+        }
+
+        public void CargarJSON(string rutaArchivo)
+        {
+            if (!File.Exists(rutaArchivo))
+            {
+                Console.WriteLine("No se encontró el archivo JSON.");
+                return;
+            }
+
+            string json = File.ReadAllText(rutaArchivo);
+            Nodo? nuevaRaiz = JsonSerializer.Deserialize<Nodo>(json);
+
+            if (nuevaRaiz == null)
+            {
+                Console.WriteLine("Error al cargar el árbol desde JSON.");
+                return;
+            }
+
+            this.Raiz = nuevaRaiz;
+
+            ReasignarPadres(Raiz, null);
+
+            // RECONSTRUIR TRIE COMPLETO DESDE EL ÁRBOL
+            trie = new Trie();
+            ReIndexarTrie(Raiz);
+
+            Console.WriteLine("Árbol cargado correctamente desde JSON.");
+        }
+
+        private void ReIndexarTrie(Nodo nodo)
+        {
+            trie.Insertar(nodo.Nombre, nodo);
+
+            foreach (var hijo in nodo.Children)
+                ReIndexarTrie(hijo);
+        }
+
+        private void ReasignarPadres(Nodo nodo, Nodo? padre)
+        {
+            nodo.Padre = padre;
+
+            foreach (var hijo in nodo.Children)
+                ReasignarPadres(hijo, nodo);
+        }
+    }
+}
+
+// archivo nodo.cs 
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;   
+
+namespace ProyectoArboles
+{
+    public class Nodo
+    {
+        public string Id { get; set; }
+        public string Nombre { get; set; }
+        public string Tipo { get; set; }
+        public string Contenido { get; set; }
+        public List<Nodo> Children { get; set; }
+
+        [JsonIgnore]  //evita ciclos
+        public Nodo Padre { get; set; }
+
+        public Nodo(string nombre, string tipo, string contenido = null, Nodo padre = null)
+        {
+            Id = Guid.NewGuid().ToString();
+            Nombre = nombre;
+            Tipo = tipo;
+            Contenido = contenido;
+            Children = new List<Nodo>();
+            Padre = padre;
+        }
+
+        public override string ToString()
+        {
+            return $"<{Tipo.ToUpper()}: {Nombre} (ID: {Id.Substring(0, 8)})>";
+        }
+
+        public void AgregarHijo(Nodo hijo)
+        {
+            hijo.Padre = this;
+            Children.Add(hijo);
+        }
+
+        public bool EliminarHijo(Nodo hijo)
+        {
+            if (Children.Contains(hijo))
+            {
+                Children.Remove(hijo);
+                hijo.Padre = null;
+                return true;
+            }
+            return false;
+        }
+
+        public bool EsCarpeta()
+        {
+            return Tipo == "carpeta";
+        }
+    }
+}
+
+// Nuevo archivo creado trie.cs
+using System;
+using System.Collections.Generic;
+
+namespace ProyectoArboles
+{
+    public class TrieNodo
+    {
+        public Dictionary<char, TrieNodo> Hijos = new Dictionary<char, TrieNodo>();
+        public List<Nodo> Referencias = new List<Nodo>(); 
+    }
+
+    public class Trie
+    {
+        private TrieNodo raiz = new TrieNodo();
+
+        // INSERTAR NOMBRE EN EL TRIE
+        public void Insertar(string palabra, Nodo nodo)
+        {
+            TrieNodo actual = raiz;
+
+            foreach (char c in palabra.ToLower())
+            {
+                if (!actual.Hijos.ContainsKey(c))
+                    actual.Hijos[c] = new TrieNodo();
+
+                actual = actual.Hijos[c];
+            }
+
+            actual.Referencias.Add(nodo);
+        }
+
+        // ELIMINAR UNA REFERENCIA (NO BORRA SUBÁRBOLES)
+        public void Eliminar(string palabra, Nodo nodo)
+        {
+            TrieNodo actual = raiz;
+
+            foreach (char c in palabra.ToLower())
+            {
+                if (!actual.Hijos.ContainsKey(c))
+                    return; // No existe, nada que eliminar
+
+                actual = actual.Hijos[c];
+            }
+
+            actual.Referencias.Remove(nodo);
+        }
+
+        // BÚSQUEDA EXACTA
+        public List<Nodo> BusquedaExacta(string palabra)
+        {
+            TrieNodo actual = raiz;
+
+            foreach (char c in palabra.ToLower())
+            {
+                if (!actual.Hijos.ContainsKey(c))
+                    return new List<Nodo>(); // No existe
+
+                actual = actual.Hijos[c];
+            }
+
+            return new List<Nodo>(actual.Referencias);
+        }
+
+        // AUTOCOMPLETADO       
+        public List<Nodo> Autocompletar(string prefijo)
+        {
+            TrieNodo actual = raiz;
+
+            foreach (char c in prefijo.ToLower())
+            {
+                if (!actual.Hijos.ContainsKey(c))
+                    return new List<Nodo>();
+
+                actual = actual.Hijos[c];
+            }
+
+            List<Nodo> resultados = new List<Nodo>();
+            RecolectarNodos(actual, resultados);
+            return resultados;
+        }
+
+        private void RecolectarNodos(TrieNodo nodo, List<Nodo> lista)
+        {
+            lista.AddRange(nodo.Referencias);
+
+            foreach (var hijo in nodo.Hijos.Values)
+                RecolectarNodos(hijo, lista);
+        }
+    }
+}
+
+// archivo pruebasa.cs con sus respectivas pruebas para el dia 5 y 6
+using System;
+using ProyectoArboles;
+using System.Collections.Generic;
+
+public static class Pruebas
+{
+    public static void Ejecutar()
+    {
+        Console.WriteLine("=== DÍA 5–6: TRIE + BÚSQUEDA / AUTOCOMPLETADO ===\n");
+
+        Arbol arbol = new Arbol();
+
+        arbol.Insertar("/", "Documentos", "carpeta");
+        arbol.Insertar("/Documentos", "Tarea1.txt", "archivo");
+        arbol.Insertar("/Documentos", "Tesis.docx", "archivo");
+        arbol.Insertar("/", "Descargas", "carpeta");
+        arbol.Insertar("/Descargas", "Tarea_nueva.pdf", "archivo");
+
+        Console.WriteLine("\n--- PRUEBA DE BÚSQUEDA EXACTA ---");
+        var exactas = arbol.BuscarNombre("Tesis.docx");
+        foreach (var r in exactas)
+            Console.WriteLine("Encontrado: " + r);
+
+        Console.WriteLine("\n--- PRUEBA DE AUTOCOMPLETADO 'Tar' ---");
+        var auto = arbol.Autocompletar("Tar");
+        foreach (var r in auto)
+            Console.WriteLine("Coincidencia: " + r);
+    }
+}
+
+//archivo Program.cs
+class Program
+{
+    static void Main()
+    {
+        Pruebas.Ejecutar();
+    }
+}
+
