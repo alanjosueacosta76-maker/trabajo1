@@ -2,8 +2,6 @@
 
 Sistema de archivos **simulado en C# (.NET)** que gestiona una jerarquía de carpetas y archivos usando un **árbol general**, **búsqueda eficiente con Trie**, **persistencia en JSON**, **papelera de reciclaje** y una **consola interactiva tipo shell**.
 
----
-
 ## 📅 Alcance logrado
 
 ### 🟢 Día 1: Estructura base
@@ -19,8 +17,6 @@ Se definió el MVP del proyecto:
 - Persistencia en JSON  
 - Consola interactiva  
 
----
-
 ### 🟢 Días 2–3: Operaciones básicas del árbol
 Se agregaron las operaciones principales:
 
@@ -34,8 +30,6 @@ Se agregaron las operaciones principales:
 - Calcular altura del árbol  
 
 Las funcionalidades fueron probadas directamente desde `Program.cs`.
-
----
 
 ### 🟢 Día 4: Persistencia en JSON
 Se implementó la persistencia sin librerías externas:
@@ -51,8 +45,6 @@ Se implementó la persistencia sin librerías externas:
 
 📄 Ejemplo generado:  
 `data/salida_dia4.json`
-
----
 
 ### 🟢 Días 5–6: Trie para búsqueda y autocompletado
 Se creó la estructura `Trie` para búsquedas rápidas:
@@ -71,8 +63,6 @@ Se creó la estructura `Trie` para búsquedas rápidas:
 - Eliminación
 
 El autocompletado funciona sobre **todos los nombres del sistema**.
-
----
 
 ### 🟢 Días 7–9: Consola interactiva tipo shell
 Se implementó una consola similar a un sistema operativo.
@@ -107,7 +97,6 @@ exit
 - `restore <nombre>` → restaurar archivo/carpeta  
 - `empty` → vaciar papelera  
 
----
 
 ### 🟢 Días 10–11: Pruebas de integración y rendimiento
 Se realizaron pruebas para validar:
@@ -120,8 +109,6 @@ Se realizaron pruebas para validar:
 
 Se midieron tiempos de inserción, búsqueda y carga desde JSON.
 
----
-
 ### 🟢 Día 12: Documentación
 Este README documenta completamente:
 
@@ -131,8 +118,6 @@ Este README documenta completamente:
 - Formato JSON  
 - Ejemplos de ejecución  
 - Pruebas realizadas  
-
----
 
 ## 🧱 Estructuras de datos principales
 
