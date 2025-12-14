@@ -603,4 +603,17 @@ namespace ProyectoArboles
 }
 
 // archivo program.cs actulizado ya no se necesita el archivo pruebas.cs
+using ProyectoArboles;
+
+class Program
+{
+    static void Main()
+    {
+        Arbol arbol = new Arbol();
+        Trie trie = new Trie();
+
+        Consola consola = new Consola(arbol, trie);
+        consola.Iniciar();
+    }
+}
 
