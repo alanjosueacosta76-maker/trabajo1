@@ -1,6 +1,6 @@
 # 📁 Proyecto Final – Árbol General + Trie + Consola (Día 1–12)
 
-Sistema de archivos **simulado en C# (.NET)** que gestiona una jerarquía de carpetas y archivos usando un **árbol general**, **búsqueda eficiente con Trie**, **persistencia en JSON**, **papelera de reciclaje** y una **consola interactiva tipo shell**.
+Sistema de archivos **simulado en C# ** que gestiona una jerarquía de carpetas y archivos usando un **árbol general**, **búsqueda eficiente con Trie**, **persistencia en JSON**, **papelera de reciclaje** y una **consola interactiva tipo shell**.
 
 ## 📅 Alcance logrado
 
@@ -125,7 +125,6 @@ Este README documenta completamente:
 Representa una carpeta o archivo del sistema.
 
 **Campos**
-```csharp
 Id          // GUID único
 Nombre
 Tipo        // "carpeta" | "archivo"
@@ -167,7 +166,7 @@ Eliminar(nombre)
 
 🔹 Consola interactiva
 
-Mini sistema operativo escrito en C#.
+Mini sistema operativo hecho en C#.
 
 Ejecutar:
 dotnet run
@@ -198,3 +197,64 @@ No se utilizan librerías externas
 El proyecto es totalmente funcional desde consola
 
 Pensado para prácticas de estructuras de datos (árboles y tries)
+
+📅 Día 13 – Demo y script de ejecución
+
+▶ Cómo  se ejecuta el proyecto
+
+Desde la raíz del proyecto  utilizas el siguiente comando: dotnet run
+
+Esto inicia la consola interactiva del sistema de archivos.
+
+🎥 Demo del sistema (flujo sugerido)
+
+El siguiente script demuestra de forma ordenada todas las capacidades del proyecto:
+
+/> md Proyectos
+/> cd Proyectos
+/Proyectos> md Estructuras
+/Proyectos> cd Estructuras
+/Proyectos/Estructuras> mk Arbol.txt
+/Proyectos/Estructuras> edit Arbol.txt Estructura de datos tipo árbol
+/Proyectos/Estructuras> search Arbol.txt
+/Proyectos/Estructuras> auto Arb
+/Proyectos/Estructuras> tree
+/Proyectos/Estructuras> save demo.json
+/Proyectos/Estructuras> del Arbol.txt
+/Proyectos/Estructuras> trash
+/Proyectos/Estructuras> restore Arbol.txt
+/Proyectos/Estructuras> load demo.json
+/Proyectos/Estructuras> exit
+
+🧪 Funcionalidades demostradas en el script
+
+Durante la demo se valida:
+
+✔ Creación de carpetas (md)
+
+✔ Navegación por el árbol (cd, ls)
+
+✔ Creación y edición de archivos (mk, edit)
+
+✔ Búsqueda exacta usando Trie (search)
+
+✔ Autocompletado por prefijo (auto)
+
+✔ Visualización completa del árbol (tree)
+
+✔ Persistencia en JSON (save, load)
+
+✔ Papelera de reciclaje (del, trash, restore)
+
+✔ Manejo correcto del estado del sistema
+
+🏁 Estado final del proyecto
+
+✔ Árbol general
+✔ Trie integrado
+✔ Consola tipo shell
+✔ Persistencia JSON
+✔ Papelera de reciclaje
+✔ Pruebas de rendimiento
+✔ Documentación completa
+✔ Demo preparada
