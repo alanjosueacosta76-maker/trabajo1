@@ -207,54 +207,79 @@ Desde la raíz del proyecto  utilizas el siguiente comando: dotnet run
 Esto inicia la consola interactiva del sistema de archivos.
 
 🎥 Demo del sistema (flujo sugerido)
+@echo off
+REM ==========================================
+REM Ejecuta el DEMO del Proyecto Final
+REM Árbol General + Trie + Consola (C# .NET)
+REM ==========================================
 
-El siguiente script demuestra de forma ordenada todas las capacidades del proyecto:
+REM Ir a la carpeta del proyecto (donde está el .csproj)
+cd /d "%~dp0"
 
-/> md Proyectos
-/> cd Proyectos
-/Proyectos> md Estructuras
-/Proyectos> cd Estructuras
-/Proyectos/Estructuras> mk Arbol.txt
-/Proyectos/Estructuras> edit Arbol.txt Estructura de datos tipo árbol
-/Proyectos/Estructuras> search Arbol.txt
-/Proyectos/Estructuras> auto Arb
-/Proyectos/Estructuras> tree
-/Proyectos/Estructuras> save demo.json
-/Proyectos/Estructuras> del Arbol.txt
-/Proyectos/Estructuras> trash
-/Proyectos/Estructuras> restore Arbol.txt
-/Proyectos/Estructuras> load demo.json
-/Proyectos/Estructuras> exit
+echo ================================
+echo Iniciando DEMO del proyecto...
+echo ================================
+echo.
 
-🧪 Funcionalidades demostradas en el script
+dotnet run
 
-Durante la demo se valida:
+if %errorlevel% neq 0 (
+    echo.
+    echo ❌ Error al ejecutar el demo.
+    pause
+    exit /b %errorlevel%
+)
 
-✔ Creación de carpetas (md)
+echo.
+echo ✅ Demo finalizado correctamente.
+pause
 
-✔ Navegación por el árbol (cd, ls)
+// archivo run_cosole.bat
+@echo off
+REM ============================================
+REM Proyecto Final - Consola de Archivos
+REM Lenguaje: C# (.NET)
+REM ============================================
 
-✔ Creación y edición de archivos (mk, edit)
+echo Iniciando consola del sistema de archivos...
+echo.
 
-✔ Búsqueda exacta usando Trie (search)
+REM Ir al directorio donde esta el .bat
+cd /d "%~dp0"
 
-✔ Autocompletado por prefijo (auto)
+REM Ejecutar directamente la consola
+dotnet run
 
-✔ Visualización completa del árbol (tree)
+echo.
+echo Consola finalizada.
+pause
 
-✔ Persistencia en JSON (save, load)
+// archivo run_test.bat
+@echo off
+REM ==========================================
+REM Ejecuta PRUEBAS del Proyecto Final
+REM Árbol General + Trie + Consola (C# .NET)
+REM Días 10–11: Integración y rendimiento
+REM ==========================================
 
-✔ Papelera de reciclaje (del, trash, restore)
+REM Ir a la carpeta del proyecto
+cd /d "%~dp0"
 
-✔ Manejo correcto del estado del sistema
+echo ================================
+echo Ejecutando PRUEBAS del proyecto
+echo ================================
+echo.
 
-🏁 Estado final del proyecto
+REM Ejecuta el proyecto (Program.cs debe llamar a PruebasIntegracion)
+dotnet run
 
-✔ Árbol general
-✔ Trie integrado
-✔ Consola tipo shell
-✔ Persistencia JSON
-✔ Papelera de reciclaje
-✔ Pruebas de rendimiento
-✔ Documentación completa
-✔ Demo preparada
+if %errorlevel% neq 0 (
+    echo.
+    echo ❌ Error al ejecutar las pruebas.
+    pause
+    exit /b %errorlevel%
+)
+
+echo.
+echo ✅ Pruebas finalizadas correctamente.
+pause
